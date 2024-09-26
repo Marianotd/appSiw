@@ -1,20 +1,16 @@
 import { Router } from 'express'
-import { login, register, update } from '../../modules/users/user-controller.js'
+import { getUser, login, logout, register, update } from '../../modules/users/user-controller.js'
 
 const router = Router()
 
-// Sesion
 router
+  // Sesión
   .post('/register', register)
   .post('/login', login)
-  .put('/update', update)
+  .post('/logout', logout)
 
-// User
-// .get('/current', handleAuth(users), controller.getUserSession)
-// .put('/current/update', handleAuth(users), controller.currentUpdate)
-// .put('/current/uploadphoto',
-//   handleAuth(users),
-//   uploader('profiles', 5, ['image/jpeg', 'image/png']).single('photo'),
-//   controller.uploadPhoto)
+  // User
+  .get('/current', getUser)
+  .put('/current/update', update)
 
 export default router

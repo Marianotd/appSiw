@@ -1,6 +1,8 @@
-import bcrypt, { hash } from 'bcrypt'
+import bcrypt from 'bcrypt'
 import User from './User.js'
+import jwt from 'jsonwebtoken'
 import { validateRegister, validateLogin, validateUpdate } from './user-validations.js'
+import configEnv from '../../config/env.js'
 
 export const register = async (req, res) => {
   const { first_name, last_name, email, password, confirm_password } = req.body
@@ -8,24 +10,26 @@ export const register = async (req, res) => {
 
   // Validación de campos
   const checkUser = validateRegister(user)
-  if (checkUser.isError)
+  if (checkUser.isError) {
     return res.status(400).json({ isError: true, message: 'Error de validación de datos', error: checkUser.error })
+  }
 
   // Hash de contraseña
   user.password = await bcrypt.hash(user.password, 10)
 
   try {
     // Verificar existencia de usuario
-    if (User.findOne({ where: { email: user.email } }))
+    const userDb = await User.findOne({ where: { email: user.email } })
+    if (userDb) {
       return res.status(400).json({ isError: true, message: 'Usuario existente' })
+    }
 
-    const userDb = await User.create(user)
+    const newUserDb = await User.create(user)
     res.status(200).json({
       isError: false,
       message: 'Usuario creado correctamente',
-      data: userDb._id
+      data: newUserDb._id
     })
-
   } catch (error) {
     console.error('Ha ocurrido un error al crear usuario:', error)
     return res.status(400).json({
@@ -42,26 +46,49 @@ export const login = async (req, res) => {
 
   // Validación de campos
   const checkUser = validateLogin(user)
-  if (checkUser.isError)
+  if (checkUser.isError) {
     return res.status(400).json({ isError: true, message: 'Error de validación de datos', error: checkUser.error })
+  }
 
   try {
     // Verificar existencia de usuario
     const userDb = await User.findOne({ where: { email: user.email } })
-    if (!userDb)
-      return res.status(400).json({ isError: true, message: 'Usuario inexistente' })
+    if (!userDb) {
+      return res.status(400).json({ isError: true, message: 'Correo electrónico incorrecto' })
+    }
 
     // Verificación de contraseña
     const isValid = await bcrypt.compare(user.password, userDb.password)
-    if (!isValid)
+    if (!isValid) {
       return res.status(400).json({ isError: true, message: 'Contraseña incorrecta' })
+    }
 
-    res.status(200).json({
-      isError: false,
-      message: 'Usuario logueado exitosamente',
-      data: userDb._id
-    })
+    try {
+      const token = jwt.sign(
+        { userId: userDb._id, email: userDb.email },
+        configEnv.jwt_code,
+        { expiresIn: '1h' }
+      )
 
+      res
+        .cookie('access_token', token, {
+          httpOnly: true,
+          samesite: 'strict',
+          secure: process.env.NODE_ENV === 'production',
+          maxAge: 1000 * 60 * 60
+        })
+        .status(200).json({
+          isError: false,
+          message: 'Usuario logueado exitosamente',
+          data: { id: userDb._id, token }
+        })
+    } catch (err) {
+      console.error('Error generando token:', err)
+      return res.status(400).json({
+        isError: true,
+        message: 'Error al generar token'
+      })
+    }
   } catch (error) {
     console.error('Ha ocurrido un error al iniciar sesión:', error)
     return res.status(400).json({
@@ -73,34 +100,27 @@ export const login = async (req, res) => {
 }
 
 export const update = async (req, res) => {
-  const { first_name, last_name, email, password } = req.body
+  const { _id, first_name, last_name, email, password } = req.body
   const user = { first_name, last_name, email, password }
 
   // Validación de campos
   const checkUser = validateUpdate(user)
-  if (checkUser.isError)
+  if (checkUser.isError) {
     return res.status(400).json({ isError: true, message: 'Error de validación de datos', error: checkUser.error })
+  }
 
   try {
     // Verificar existencia de usuario
-    const userDb = await User.findOne({ where: { email: user.email } })
-    if (!userDb)
-      return res.status(400).json({ isError: true, message: 'Usuario inexistente' })
-
+    const userDb = await User.findOne({ where: { _id } })
     if (!userDb) {
-      console.error('Ha ocurrido un error al iniciar sesión')
-      return res.status(400).json({
-        isError: true,
-        message: 'Usuario no encontrado'
-      })
+      return res.status(400).json({ isError: true, message: 'Usuario inexistente' })
     }
 
     await userDb.update(user)
-
     res.status(200).json({
       isError: false,
       message: 'Usuario actualizado exitosamente',
-      data: userDb
+      data: userDb._id
     })
   } catch (error) {
     console.error('Ha ocurrido un error al actualizar usuario:', error)
@@ -113,15 +133,52 @@ export const update = async (req, res) => {
 }
 
 export const logout = async (req, res) => {
-  const { email } = req.body
+  const { _id } = req.body
 
   try {
+    // Verificar existencia de usuario
+    const userDb = await User.findOne({ where: { _id } })
+    if (!userDb) {
+      return res.status(400).json({ isError: true, message: 'Usuario inexistente' })
+    }
 
+    res.status(200).json({
+      isError: false,
+      message: 'Sesión cerrada exitosamente',
+      data: userDb._id
+    })
   } catch (error) {
     console.error('Ha ocurrido un error al cerrar sesión:', error)
     return res.status(400).json({
       isError: true,
       message: 'Error al cerrar sesión',
+      error: error.message
+    })
+  }
+}
+
+export const getUser = async (req, res) => {
+  const { _id } = req.body
+
+  try {
+    // Verificar existencia de usuario
+    const userDb = await User.findOne({ where: { _id } })
+    if (!userDb) {
+      return res.status(400).json({ isError: true, message: 'Usuario no encontrado' })
+    }
+
+    const { password: _, ...publicUser } = userDb.dataValues
+
+    res.status(200).json({
+      isError: false,
+      message: 'Usuario encontrado',
+      data: publicUser
+    })
+  } catch (error) {
+    console.error('Ha ocurrido un error al buscar usuario:', error)
+    return res.status(400).json({
+      isError: true,
+      message: 'Error al buscar datos de usuario',
       error: error.message
     })
   }

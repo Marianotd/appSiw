@@ -1,5 +1,6 @@
 import express from 'express'
 import cors from 'cors'
+import cookieParser from 'cookie-parser'
 import configEnv from './config/env.js'
 import db from './database/db.js'
 import router from './routes/router.js'
@@ -10,6 +11,7 @@ app.use(cors({ origin: configEnv.cors_origin }))
 
 // Configuración
 app.use(express.json())
+app.use(cookieParser())
 
 // BDD
 const connectDB = async () => {
