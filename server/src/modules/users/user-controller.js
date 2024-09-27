@@ -64,6 +64,7 @@ export const login = async (req, res) => {
     }
 
     try {
+      // Creación de token jwt
       const token = jwt.sign(
         { userId: userDb._id, email: userDb.email },
         configEnv.jwt_code,
@@ -132,37 +133,20 @@ export const update = async (req, res) => {
   }
 }
 
-export const logout = async (req, res) => {
-  const { _id } = req.body
-
-  try {
-    // Verificar existencia de usuario
-    const userDb = await User.findOne({ where: { _id } })
-    if (!userDb) {
-      return res.status(400).json({ isError: true, message: 'Usuario inexistente' })
-    }
-
-    res.status(200).json({
-      isError: false,
-      message: 'Sesión cerrada exitosamente',
-      data: userDb._id
-    })
-  } catch (error) {
-    console.error('Ha ocurrido un error al cerrar sesión:', error)
-    return res.status(400).json({
-      isError: true,
-      message: 'Error al cerrar sesión',
-      error: error.message
-    })
-  }
-}
+export const logout = (req, res) => {
+  res.clearCookie('access_token');
+  return res.status(200).json({ message: 'Sesión cerrada' });
+};
 
 export const getUser = async (req, res) => {
-  const { _id } = req.body
-
   try {
+    // Verificar user habiendo revisado token
+    if (!req.user || !req.user.userId) {
+      return res.status(400).json({ isError: true, message: 'Usuario no autenticado o token inválido' });
+    }
+
     // Verificar existencia de usuario
-    const userDb = await User.findOne({ where: { _id } })
+    const userDb = await User.findOne({ where: { _id: req.user.userId } })
     if (!userDb) {
       return res.status(400).json({ isError: true, message: 'Usuario no encontrado' })
     }

@@ -7,7 +7,7 @@ import router from './routes/router.js'
 
 // Inicialización
 const app = express()
-app.use(cors({ origin: configEnv.cors_origin }))
+app.use(cors({ origin: configEnv.cors_origin, credentials: true }))
 
 // Configuración
 app.use(express.json())

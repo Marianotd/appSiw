@@ -1,26 +1,18 @@
-import { useEffect } from "react";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet } from "react-router-dom";
+import NavBar from "../components/common/NavBar";
 
 export default function AppLayout() {
-  const navigate = useNavigate()
-
-  useEffect(() => {
-    navigate('/auth/login')
-  }, [])
-
   return (
-    <div>
-      <header>
-        This is the header
+    <>
+      <header
+        className="w-full bg-[#3B82F6]"
+      >
+        <NavBar />
       </header>
 
       <main>
         <Outlet />
       </main>
-
-      <footer>
-        This is the footer
-      </footer>
-    </div>
+    </>
   )
 }

@@ -1,5 +1,6 @@
 import { Router } from 'express'
 import { getUser, login, logout, register, update } from '../../modules/users/user-controller.js'
+import { authenticateJWT } from '../../middleware/authValidator.js'
 
 const router = Router()
 
@@ -10,7 +11,7 @@ router
   .post('/logout', logout)
 
   // User
-  .get('/current', getUser)
-  .put('/current/update', update)
+  .get('/current', authenticateJWT, getUser)
+  .put('/current/update', authenticateJWT, update)
 
 export default router
