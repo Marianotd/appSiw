@@ -13,7 +13,6 @@ export default function Register() {
   const inputList = ['first_name', 'last_name', 'email', 'password', 'confirm_password']
 
   const onSubmit = async (data) => {
-    console.log(data)
     try {
       setLoading(true)
       await registerUser(data)
@@ -52,7 +51,7 @@ export default function Register() {
           </Link>
         </div>
 
-        <CustomButton text={'Registrarse'} />
+        <CustomButton text={loading ? 'Registrando' : 'Registrarse'} />
       </div>
 
       <SpinerFullScreen loading={loading} />

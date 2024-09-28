@@ -135,7 +135,7 @@ export const update = async (req, res) => {
 
 export const logout = (req, res) => {
   res.clearCookie('access_token');
-  return res.status(200).json({ message: 'Sesión cerrada' });
+  return res.status(200).json({ isError: false, message: 'Sesión cerrada  con éxito' });
 };
 
 export const getUser = async (req, res) => {

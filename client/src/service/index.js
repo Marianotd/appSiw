@@ -15,8 +15,15 @@ export const loginUser = async (userData) => {
 }
 
 export const fetchSession = async () => {
-  const user = await axios.get(`${URI}/users/current`, {
+  const user = await axios.get(`${URI}/users/session`, {
     withCredentials: true
   })
   return user.data
+}
+
+export const logout = async () => {
+  const response = await axios.get(`${URI}/users/logout`, {
+    withCredentials: true
+  })
+  return response
 }

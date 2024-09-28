@@ -5,13 +5,13 @@ import { Outlet, useLocation, useNavigate } from "react-router-dom"
 export default function PrivateRoutes() {
   const navigate = useNavigate()
   const location = useLocation()
-  const { isSessionActive, status } = useAppStore()
+  const { isSessionActive } = useAppStore()
 
   useEffect(() => {
     const fetchSessionStatus = async () => {
       try {
         const session = await isSessionActive()
-        if (!session && !status) {
+        if (!session) {
           navigate('/auth/login')
         }
       } catch (error) {

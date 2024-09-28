@@ -21,7 +21,7 @@ export default function NavLink({ label, path }) {
   return (
     <Link
       to={path}
-      className={`rounded-xl text-center text-white w-full text-lg py-2
+      className={`rounded-xl text-center text-white hover:font-bold w-full lg:w-1/6 text-lg py-2 ease-out duration-150
         ${handleLink() ? 'font-semibold bg-white/15' : 'font-normal'}
         `}
     >

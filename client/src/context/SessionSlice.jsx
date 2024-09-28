@@ -1,4 +1,4 @@
-import { fetchSession, loginUser } from '../service/index'
+import { fetchSession, loginUser, logout } from '../service/index'
 
 export const sessionSlice = (set, get) => ({
   idUser: null,
@@ -24,7 +24,22 @@ export const sessionSlice = (set, get) => ({
       }))
       return true
     } else {
-      set(() => ({ status: true }))
+      set(() => ({ status: false }))
+      return false
+    }
+  },
+  logoutStore: async () => {
+    const { data } = await logout()
+
+    if (!data.isError) {
+      set(() => ({
+        status: false,
+        userId: null,
+        userDetail: {}
+      }))
+
+      return true
+    } else {
       return false
     }
   }

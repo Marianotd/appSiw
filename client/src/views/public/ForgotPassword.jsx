@@ -48,14 +48,18 @@ export default function ForgotPassword() {
           </Link>
         </div>
 
-        <CustomButton text={'Enviar'} />
+        <CustomButton text={loading ? 'Enviando' : 'Enviar'} />
 
-        <Link
-          className="text-blue-400 underline underline-offset-auto"
-          to={'/auth/login'}
-        >
-          Volver al inicio de sesión
-        </Link>
+        <div>
+          <span>Volver a</span>
+          <Link
+            className="ml-1 text-blue-400 underline underline-offset-auto"
+            to={'/auth/login'}
+          >
+            inicio de sesión
+          </Link>
+        </div>
+
       </div>
 
       <SpinerFullScreen loading={loading} />

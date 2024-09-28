@@ -54,7 +54,7 @@ export default function Login() {
           </Link>
         </div>
 
-        <CustomButton text={'Iniciar sesión'} />
+        <CustomButton text={loading ? 'Iniciando sesión' : 'Iniciar sesión'} />
       </div>
 
       <SpinerFullScreen loading={loading} />

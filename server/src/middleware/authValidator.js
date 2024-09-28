@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken'
 import configEnv from '../config/env.js'
 
-export const authenticateJWT = (req, res, next) => {
+export const authenticateJWT = (req, res) => {
   const token = req.cookies.access_token
 
   if (!token) {
@@ -11,7 +11,7 @@ export const authenticateJWT = (req, res, next) => {
   try {
     const decoded = jwt.verify(token, configEnv.jwt_code)
     req.user = decoded
-    next()
+    res.status(200).json({ isError: false, message: 'Sesión activa', data: req.user })
   } catch (error) {
     console.error('Error al validar token:', error)
     return res.status(400).json({ isError: true, message: 'Token inválido' })

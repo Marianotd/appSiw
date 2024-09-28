@@ -8,7 +8,8 @@ router
   // Sesión
   .post('/register', register)
   .post('/login', login)
-  .post('/logout', logout)
+  .get('/logout', logout)
+  .get('/session', authenticateJWT)
 
   // User
   .get('/current', authenticateJWT, getUser)
