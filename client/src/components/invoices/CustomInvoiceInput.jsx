@@ -1,9 +1,7 @@
 import { useState, useEffect } from 'react';
-import { PiEye, PiEyeClosed } from "react-icons/pi";
 
 export default function CustomInvoiceInput({ name, register, watch, error }) {
   const [showError, setShowError] = useState(error);
-  const [showPass, setShowPass] = useState(false)
   const inputValue = watch(name);
 
   useEffect(() => {
@@ -22,7 +20,7 @@ export default function CustomInvoiceInput({ name, register, watch, error }) {
   };
 
   const typeSelector = name === 'number' || name === 'total' ? 'number' : name === 'date' ? 'datetime-local' : 'text';
-  const placeholderSelector = name === 'number' ? 'Número de factura' : name === 'client' ? 'Cliente' : name === 'date' ? 'Fecha de factura' : name === 'total' ? 'Total' : 'No identificado';
+  const placeholderSelector = name === 'number' ? 'Número de factura' : name === 'client' ? 'Cliente' : name === 'date' ? 'Fecha de la factura' : name === 'total' ? 'Total' : 'No identificado';
   const labelSelector = placeholderSelector[0].toUpperCase() + placeholderSelector.substring(1);
 
   const validationRules = {

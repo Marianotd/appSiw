@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 export default function Logo() {
   return (
     <Link
-      to='/'
+      to='/invoices'
       aria-label='Ir al inicio'
     >
       <img

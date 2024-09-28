@@ -6,8 +6,8 @@ import PrivateRoutes from './PrivateRoutes'
 import Login from "../views/public/Login";
 import Register from '../views/public/Register'
 import ForgotPassword from '../views/public/ForgotPassword'
-import Home from "../views/private/Home";
 import Invoices from "../views/private/Invoices";
+import User from "../views/private/User";
 
 export default function Router() {
   return (
@@ -23,11 +23,8 @@ export default function Router() {
 
         <Route element={<PrivateRoutes />}>
           <Route element={<AppLayout />}>
-            <Route path='/' element={<Home />} />
             <Route path='/invoices' element={<Invoices />} />
-            <Route path='/clients' element={<></>} />
-            <Route path='/client/:id' element={<></>} />
-            <Route path='/user' element={<></>} />
+            <Route path='/user' element={<User />} />
           </Route>
         </Route>
       </Routes>

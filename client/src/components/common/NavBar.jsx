@@ -14,9 +14,7 @@ export default function NavBar() {
   const [open, setOpen] = useState(false);
 
   const navLinks = [
-    { path: '/', label: 'Inicio' },
     { path: '/invoices', label: 'Facturas' },
-    { path: '/clients', label: 'Clientes' },
     { path: '/user', label: 'Mis Datos' },
   ]
 
@@ -60,7 +58,7 @@ export default function NavBar() {
     <nav className='container py-2 px-4 mx-auto flex justify-between items-center'>
       <Logo />
 
-      <div className='hidden lg:flex w-full justify-evenly items-center'>
+      <div className='hidden lg:flex w-full justify-end gap-2 items-center'>
         <LinkList
           data={navLinks}
           isDrawer={false}

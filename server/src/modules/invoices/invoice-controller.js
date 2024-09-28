@@ -2,9 +2,9 @@ import Invoice from './Invoice.js'
 import { validateInvoice, validateInvoiceNumber } from './invoice-validations.js'
 
 export const createInvoice = async (req, res) => {
-  const { client, date, total } = req.body
+  const { number, client, date, total } = req.body
 
-  const validation = validateInvoice({ client, date, total })
+  const validation = validateInvoice({ number: Number(number), client, date, total: Number(total) })
 
   if (validation.isError) {
     return res.status(400).json({ isError: true, message: 'Error de validación de datos', error: validation.error })
@@ -13,6 +13,12 @@ export const createInvoice = async (req, res) => {
   const newInvoice = { client, date, total }
 
   try {
+    const existInvoice = await Invoice.findOne({ where: { number } })
+
+    if (existInvoice) {
+      return res.status(200).json({ isError: true, message: `Ya existe una factura con el N° ${number}` })
+    }
+
     const invoiceDb = await Invoice.create(newInvoice)
 
     res.status(200).json({ isError: false, message: 'Factura creada con éxito', data: invoiceDb })
@@ -21,6 +27,7 @@ export const createInvoice = async (req, res) => {
     res.status(400).json({ isError: true, message: 'Error al crear factura' })
   }
 }
+
 export const getAllInvoices = async (req, res) => {
   try {
     const invoicesDb = await Invoice.findAll()
@@ -31,17 +38,15 @@ export const getAllInvoices = async (req, res) => {
     res.status(400).json({ isError: true, message: 'Error al leer facturas' })
   }
 }
+
 export const getInvoice = async (req, res) => {
   const { number } = req.params
 
-  const validation = validateInvoiceNumber({ number });
+  const validation = validateInvoiceNumber({ number: Number(number) });
 
-  if (!validation.success) {
-    return res.status(400).json({
-      isError: true,
-      message: 'Error de validación',
-      errors: validation.error.errors.map(err => err.message)
-    });
+
+  if (validation.isError) {
+    return res.status(400).json({ isError: true, message: 'Error de validación de datos', error: validation.error })
   }
 
   try {
@@ -57,18 +62,15 @@ export const getInvoice = async (req, res) => {
     res.status(400).json({ isError: true, message: `Error al leer factura n° ${number}` })
   }
 }
+
 export const updateInvoice = async (req, res) => {
   const { number } = req.params
   const { client, date, total } = req.body
 
-  const validation = validateInvoice({ number, client, date, total })
+  const validation = validateInvoice({ number: Number(number), client, date, total: Number(total) })
 
-  if (!validation.success) {
-    return res.status(400).json({
-      isError: true,
-      message: 'Error de validación de datos',
-      errors: validation.error.errors.map(err => err.message)
-    });
+  if (validation.isError) {
+    return res.status(400).json({ isError: true, message: 'Error de validación de datos', error: validation.error })
   }
 
   const newInvoice = { number, client, date, total }
@@ -88,17 +90,14 @@ export const updateInvoice = async (req, res) => {
     res.status(400).json({ isError: true, message: `Error al actualizar factura n° ${number}` })
   }
 }
+
 export const deleteInvoice = async (req, res) => {
   const { number } = req.params
 
-  const validation = validateInvoiceNumber({ number });
+  const validation = validateInvoiceNumber({ number: Number(number) });
 
-  if (!validation.success) {
-    return res.status(400).json({
-      isError: true,
-      message: 'Error de validación',
-      errors: validation.error.errors.map(err => err.message)
-    });
+  if (validation.isError) {
+    return res.status(400).json({ isError: true, message: 'Error de validación de datos', error: validation.error })
   }
 
   try {

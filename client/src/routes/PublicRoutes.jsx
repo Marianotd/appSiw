@@ -11,7 +11,7 @@ export default function PublicRoutes() {
       try {
         const session = await isSessionActive()
         if (session) {
-          navigate('/')
+          navigate('/invoices')
         }
       } catch (error) {
         navigate('/auth/login')

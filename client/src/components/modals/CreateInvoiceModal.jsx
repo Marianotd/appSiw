@@ -6,6 +6,8 @@ import CustomButton from '../login-register/CustomButton'
 
 export default function CreateInvoiceModal({ closeModal, createInvoice }) {
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(false)
+  const [errorMessage, setErrorMessage] = useState(null)
   const inputList = ['number', 'client', 'date', 'total']
 
   const { register, handleSubmit, watch, formState: { errors } } = useForm()
@@ -13,13 +15,26 @@ export default function CreateInvoiceModal({ closeModal, createInvoice }) {
   const onSubmit = async (data) => {
     let { date } = data
     let formattedDate = date.replace('T', ' ')
+
     try {
-      await createInvoice({ ...data, date: formattedDate })
       setLoading(true)
+      const { isError, message } = await createInvoice({ ...data, date: formattedDate })
+      if (isError) {
+        setError(true)
+        setErrorMessage(message)
+      } else {
+        setError(false)
+        setErrorMessage('')
+      }
     } catch (error) {
       console.error('Error en el envío del formulario:', error);
+      setError(true)
     } finally {
       setLoading(false)
+      setTimeout(() => {
+        setError(false)
+        setErrorMessage('')
+      }, 3000)
     }
   }
 
@@ -49,8 +64,11 @@ export default function CreateInvoiceModal({ closeModal, createInvoice }) {
           errors={errors}
           isInvoice={true}
         />
+        <div className='w-full flex flex-col items-center gap-2'>
+          {error && (<p className='text-red-500'>{errorMessage}</p>)}
 
-        <CustomButton text={!loading ? 'Completar carga' : 'Cargando...'} />
+          <CustomButton text={!loading ? 'Completar carga' : 'Cargando...'} />
+        </div>
       </form>
     </div>
   )

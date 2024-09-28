@@ -20,6 +20,7 @@ export default function Invoices() {
   const [showEditModal, setShowEditModal] = useState(false)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [invoices, setInvoices] = useState(null)
+  const [selectedInvoice, setSelectedInvoice] = useState(null)
 
   const invoiceHead = [
     { invField: 'number', description: 'Número' },
@@ -35,7 +36,7 @@ export default function Invoices() {
     }
 
     fetchInvoices()
-  }, [showModal])
+  }, [showModal, showEditModal, showDeleteModal])
 
   const filteredInvoices = useMemo(() => {
     if (!searchValue) return invoices
@@ -68,16 +69,25 @@ export default function Invoices() {
 
   const handleCreateInvoice = async (newInvoice) => {
     try {
-      await createInvoice(newInvoice)
+      const response = await createInvoice(newInvoice)
+      return response
     } catch (error) {
-
+      console.error(error)
+      setError(true)
     } finally {
       setShowModal(false)
     }
   }
 
-  const handleDeleteInvoice = async (number) => {
-    // Función a crear
+  const handleEditInvoice = async (invoice) => {
+    const formattedDate = dayjs(invoice.date).format("YYYY-MM-DDThh:mm")
+    setSelectedInvoice({ ...invoice, date: formattedDate })
+    setShowEditModal(true)
+  }
+
+  const handleDeleteInvoice = async (invoice) => {
+    setSelectedInvoice(invoice)
+    setShowDeleteModal(true)
   }
 
   const renderSortIcon = (key) => {
@@ -97,7 +107,7 @@ export default function Invoices() {
 
   return (
     <section className='flex flex-col gap-6 items-center py-6 px-4 h-full'>
-      <h1 className='text-4xl font-bold lg:hidden'>Facturas</h1>
+      <h1 className='text-4xl font-bold'>Facturas</h1>
 
       <div className='flex flex-col items-center lg:flex-row justify-between gap-6 w-3/4 md:w-1/2 lg:w-full'>
         <button
@@ -121,11 +131,24 @@ export default function Invoices() {
             renderSortIcon={renderSortIcon}
           />
 
-          <TableBody
-            invoices={filteredInvoices}
-            editFunction={() => setShowEditModal(true)}
-            deleteFuntion={() => setShowDeleteModal(true)}
-          />
+          {
+            invoices && invoices.length > 0 ? (
+              <TableBody
+                invoices={filteredInvoices}
+                editFunction={handleEditInvoice}
+                deleteFuntion={handleDeleteInvoice}
+              />
+            ) : (
+              <tbody>
+                <tr>
+                  <td colSpan='6' className='h-[500px] text-center text-xl font-bold'>
+                    Aun no hay facturas cargadas
+                  </td>
+                </tr>
+              </tbody>
+            )
+          }
+
         </table>
       </div>
 
@@ -142,7 +165,7 @@ export default function Invoices() {
         showEditModal && (
           <EditInvoiceModal
             closeModal={() => setShowEditModal(false)}
-            createInvoice={handleDeleteInvoice}
+            invoiceToEdit={selectedInvoice}
           />
         )
       }
@@ -151,10 +174,10 @@ export default function Invoices() {
         showDeleteModal && (
           <DeleteInvoiceModal
             closeModal={() => setShowDeleteModal(false)}
-            createInvoice={handleDeleteInvoice}
+            invoiceToDelete={selectedInvoice}
           />
         )
       }
-    </section>
+    </section >
   )
 }

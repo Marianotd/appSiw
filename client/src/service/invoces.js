@@ -7,8 +7,8 @@ export const createInvoice = async (invoiceData) => {
   return newInvoice.data
 }
 
-export const updateInvoice = async (number) => {
-  const updatedInvoice = await axios.put(`${URI}/invoices/${number}`)
+export const updateInvoice = async (invoice) => {
+  const updatedInvoice = await axios.put(`${URI}/invoices/${invoice.number}`, invoice)
   return updatedInvoice.data
 }
 
