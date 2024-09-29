@@ -45,10 +45,11 @@ const loginSchema = z.object({
 })
 
 const updateSchema = z.object({
-  first_name: firstNameSchema,
-  last_name: lastNameSchema,
-  email: emailSchema,
-  password: passwordSchema,
+  first_name: firstNameSchema.optional(),
+  last_name: lastNameSchema.optional(),
+  email: emailSchema.optional(),
+  password: passwordSchema.optional(),
+  new_password: passwordSchema.optional()
 })
 
 const resetPasswordSchema = z.object({

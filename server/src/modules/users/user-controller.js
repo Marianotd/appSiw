@@ -19,6 +19,7 @@ export const register = async (req, res) => {
   user.password = await bcrypt.hash(user.password, 10)
 
   try {
+
     // Verificar existencia de usuario
     const userDb = await User.findOne({ where: { email: user.email } })
     if (userDb) {
@@ -139,8 +140,6 @@ export const forgotPassword = async (req, res) => {
       `<p>Para restablecer tu contraseña, haz clic en el siguiente enlace:</p> <a href="${resetLink}">Restablecer contraseña</a>`
     )
 
-    console.log(response)
-
     res
       .cookie('reset_token', resetToken, {
         httpOnly: true,
@@ -176,6 +175,7 @@ export const resetPassword = async (req, res) => {
     user.password = await bcrypt.hash(user.password, 10)
 
     await userDb.update({ password: user.password })
+    res.clearCookie('reset_token');
 
     res.status(200).json({ isError: false, message: 'Contraseña modificada con éxito' })
   } catch (error) {
@@ -185,27 +185,50 @@ export const resetPassword = async (req, res) => {
 }
 
 export const update = async (req, res) => {
-  const { _id, first_name, last_name, email, password } = req.body
-  const user = { first_name, last_name, email, password }
+  const token = req.cookies.access_token
+  const { first_name, last_name, email, password, new_password } = req.body
+
+  const user = {}
+  if (first_name) user.first_name = first_name
+  if (last_name) user.last_name = last_name
+  if (email) user.email = email
 
   // Validación de campos
   const checkUser = validateUpdate(user)
   if (checkUser.isError) {
-    return res.status(400).json({ isError: true, message: 'Error de validación de datos', error: checkUser.error })
+    return res.status(400).json({ isError: true, message: 'Error de validación de datos', validationError: checkUser.error.map(err => err.message) })
   }
 
   try {
-    // Verificar existencia de usuario
-    const userDb = await User.findOne({ where: { _id } })
+    // Verificar existencia de usuario con token
+    const decoded = jwt.verify(token, configEnv.jwt_code)
+    const userDb = await User.findOne({ where: { _id: decoded.userId } })
+
     if (!userDb) {
       return res.status(400).json({ isError: true, message: 'Usuario inexistente' })
     }
 
+    if (new_password) {
+      if (!password) {
+        return res.status(400).json({ isError: true, message: 'Debe proporcionar la contraseña actual para cambiar la contraseña' })
+      }
+
+      // Verificar si la contraseña actual es válida
+      const isPasswordValid = await bcrypt.compare(password, userDb.password)
+      if (!isPasswordValid) {
+        return res.status(400).json({ isError: true, message: 'La contraseña actual es incorrecta' })
+      }
+
+      // Hashear la nueva contraseña y actualizar el usuario
+      user.password = await bcrypt.hash(new_password, 10)
+    }
+
+    // Actualizar otros datos
     await userDb.update(user)
     res.status(200).json({
       isError: false,
       message: 'Usuario actualizado exitosamente',
-      data: userDb._id
+      data: userDb
     })
   } catch (error) {
     console.error('Ha ocurrido un error al actualizar usuario:', error)
@@ -219,6 +242,7 @@ export const update = async (req, res) => {
 
 export const logout = (req, res) => {
   res.clearCookie('access_token');
+  res.clearCookie('refresh_token');
   return res.status(200).json({ isError: false, message: 'Sesión cerrada  con éxito' });
 };
 

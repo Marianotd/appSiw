@@ -14,7 +14,9 @@ export const authenticateJWT = async (req, res) => {
 
     req.user = decoded
 
-    res.status(200).json({ isError: false, message: 'Sesión activa', data: req.user })
+    const userDb = await User.findOne({ where: { _id: decoded.userId } })
+
+    res.status(200).json({ isError: false, message: 'Sesión activa', data: userDb })
   } catch (error) {
     console.error('Error al validar token:', error)
     return res.status(400).json({ isError: true, message: 'Token inválido' })

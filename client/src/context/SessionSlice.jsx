@@ -6,13 +6,29 @@ export const sessionSlice = (set, get) => ({
   status: false,
 
   userLoginStore: async (userData) => {
-    const { data } = await loginUser(userData)
-    if (data) {
+    try {
+      const { data } = await loginUser(userData)
+      if (data) {
+        set(() => ({
+          status: true,
+          idUser: data.id,
+        }))
+      }
+      return data
+    } catch (error) {
       set(() => ({
-        status: true,
-        idUser: data.id,
-      }));
+        status: false,
+      }))
+      throw error
     }
+  },
+  setUserDetail: (updatedUser) => {
+    set(() => ({
+      userDetail: {
+        ...get().userDetail,
+        ...updatedUser,
+      }
+    }));
   },
   isSessionActive: async () => {
     try {
