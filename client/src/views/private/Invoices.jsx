@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { TbFileInvoice } from "react-icons/tb";
 import { createInvoice, getAllInvoices } from '../../service/invoces'
 import dayjs from 'dayjs';
-import CustomLoader from '../../components/loading/customLoader'
+import CustomLoader from '../../components/loading/CustomLoader'
 import NotFound from '../../components/notFound/NotFound'
 import SearchTool from '../../components/invoices/SearchTool'
 import CreateInvoiceModal from '../../components/modals/CreateInvoiceModal';
