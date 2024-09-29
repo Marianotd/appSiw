@@ -17,21 +17,36 @@ export default function Login() {
   const onSubmit = async (data) => {
     try {
       setLoading(true)
-      await userLoginStore(data)
-      navigate('/')
+      const response = await userLoginStore(data)
+
+      if (response) {
+        navigate('/')
+      }
     } catch (error) {
-      setError(error.response.data)
-      console.error('Error en el envío del formulario:', error);
+      setError({
+        isError: true,
+        message: error.response.data.message || 'Error desconocido',
+        validationsError: error.response.data
+      })
+      console.error('Error en el envío del formulario:', error)
     } finally {
       setLoading(false)
+      setTimeout(() => {
+        setError({ isError: false, message: '', validationsError: [] })
+      }, 3000);
     }
   }
+
 
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="bg-white h-1/2 flex flex-col justify-center gap-10 rounded-xl w-96 shadow-lg p-6"
+      className="bg-white min-h-1/2 flex flex-col justify-center gap-10 rounded-xl w-96 shadow-lg p-6"
     >
+      <p className="font-bold text-center px-4 text-2xl">
+        Iniciar sesión
+      </p>
+
       <InputList
         inputs={inputList}
         register={register}

@@ -21,10 +21,10 @@ const passwordSchema = z.string()
 const validateSchema = (schema, data) => {
   try {
     schema.parse(data)
-    return { isError: false }
+    return { isError: false, error: null }
   } catch (error) {
     console.error('Error de validación:', error.message)
-    return { isError: true }
+    return { isError: true, error: error.errors }
   }
 }
 
@@ -44,38 +44,34 @@ const loginSchema = z.object({
   password: passwordSchema,
 })
 
+const updateSchema = z.object({
+  first_name: firstNameSchema.optional(),
+  last_name: lastNameSchema.optional(),
+  email: emailSchema.optional(),
+  password: passwordSchema.optional(),
+  new_password: passwordSchema.optional()
+})
+
+const resetPasswordSchema = z.object({
+  password: passwordSchema,
+  confirm_password: z.string(),
+}).refine((data) => data.password === data.confirm_password, {
+  path: ['confirm_password'],
+  message: 'Las contraseñas no coinciden',
+});
+
 export const validateRegister = (user) => {
-  try {
-    registerSchema.parse(user)
-    return { isError: false }
-  } catch (error) {
-    console.error('Error de validación:', error.errors)
-    return {
-      isError: true,
-      error: error.errors
-    }
-  }
+  return validateSchema(registerSchema, user)
 }
 
 export const validateLogin = (user) => {
-  try {
-    loginSchema.parse(user)
-    return { isError: false }
-  } catch (error) {
-    console.error('Error de validación:', error.errors)
-    return {
-      isError: true,
-      error: error.errors
-    }
-  }
+  return validateSchema(loginSchema, user)
 }
 
 export const validateUpdate = (user) => {
-  const updateSchema = z.object({
-    first_name: firstNameSchema,
-    last_name: lastNameSchema,
-    email: emailSchema,
-    password: passwordSchema,
-  })
   return validateSchema(updateSchema, user)
+}
+
+export const validateResetPassword = (user) => {
+  return validateSchema(resetPasswordSchema, user)
 }
