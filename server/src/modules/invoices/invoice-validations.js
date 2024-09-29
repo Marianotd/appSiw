@@ -23,7 +23,7 @@ const validateSchema = (schema, data) => {
     console.error('Error de validación:', error.message)
     return {
       isError: true,
-      error: error
+      error: error.errors
     }
   }
 }

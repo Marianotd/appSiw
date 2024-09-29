@@ -7,16 +7,16 @@ export const createInvoice = async (req, res) => {
   const validation = validateInvoice({ number: Number(number), client, date, total: Number(total) })
 
   if (validation.isError) {
-    return res.status(400).json({ isError: true, message: 'Error de validación de datos', error: validation.error })
+    return res.status(400).json({ isError: true, message: 'Error de validación de datos', validationsError: validation.error.map(err => err.message) })
   }
 
-  const newInvoice = { client, date, total }
+  const newInvoice = { number, client, date, total }
 
   try {
     const existInvoice = await Invoice.findOne({ where: { number } })
 
     if (existInvoice) {
-      return res.status(200).json({ isError: true, message: `Ya existe una factura con el N° ${number}` })
+      return res.status(400).json({ isError: true, message: `Ya existe una factura con el N° ${number}` })
     }
 
     const invoiceDb = await Invoice.create(newInvoice)
@@ -46,7 +46,7 @@ export const getInvoice = async (req, res) => {
 
 
   if (validation.isError) {
-    return res.status(400).json({ isError: true, message: 'Error de validación de datos', error: validation.error })
+    return res.status(400).json({ isError: true, message: 'Error de validación de datos', validationsError: validation.error.map(err => err.message) })
   }
 
   try {
@@ -67,22 +67,24 @@ export const updateInvoice = async (req, res) => {
   const { number } = req.params
   const { client, date, total } = req.body
 
-  const validation = validateInvoice({ number: Number(number), client, date, total: Number(total) })
+  const validation = validateInvoice({ number: Number(req.body.number), client, date, total: Number(total) })
 
   if (validation.isError) {
-    return res.status(400).json({ isError: true, message: 'Error de validación de datos', error: validation.error })
+    return res.status(400).json({ isError: true, message: 'Error de validación de datos', validationsError: validation.error.map(err => err.message) })
   }
 
-  const newInvoice = { number, client, date, total }
+  const newInvoice = { number: req.body.number, client, date, total }
 
   try {
-    const invoiceDb = await Invoice.findOne({ where: { number } })
+    if (number != req.body.number) {
+      const invoiceDb = await Invoice.findOne({ where: { number: newInvoice.number } })
 
-    if (!invoiceDb) {
-      return res.status(404).json({ isError: true, message: `Factura n° ${number} no encontrada` });
+      if (invoiceDb) {
+        return res.status(400).json({ isError: true, message: `Operación no permitida, ya existe una factura con el N° ${number}` });
+      }
     }
 
-    const updatedInvoice = await invoiceDb.update(newInvoice)
+    const updatedInvoice = await Invoice.update(newInvoice, { where: { number: number } })
 
     res.status(200).json({ isError: false, message: `Actualización exitosa de factura n° ${number}`, data: updatedInvoice })
   } catch (error) {
@@ -97,7 +99,7 @@ export const deleteInvoice = async (req, res) => {
   const validation = validateInvoiceNumber({ number: Number(number) });
 
   if (validation.isError) {
-    return res.status(400).json({ isError: true, message: 'Error de validación de datos', error: validation.error })
+    return res.status(400).json({ isError: true, message: 'Error de validación de datos', validationsError: validation.error.map(err => err.message) })
   }
 
   try {

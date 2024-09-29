@@ -9,6 +9,7 @@ import SpinerFullScreen from "../../components/loading/SpinerFullScreen"
 export default function Login() {
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState({ isError: false, message: '', validationsError: [] })
   const { userLoginStore } = useAppStore()
   const { register, handleSubmit, watch, formState: { errors } } = useForm()
   const inputList = ['email', 'password']
@@ -19,6 +20,7 @@ export default function Login() {
       await userLoginStore(data)
       navigate('/')
     } catch (error) {
+      setError(error.response.data)
       console.error('Error en el envío del formulario:', error);
     } finally {
       setLoading(false)
@@ -53,6 +55,13 @@ export default function Login() {
             Registrate
           </Link>
         </div>
+
+        {error.isError && (<p className='text-red-500 text-sm'>{error.message}</p>)}
+        {error.validationsError && error.validationsError.length > 0 && (
+          error.validationsError.map(newErr => (
+            <p className='text-red-500 text-sm'>{newErr}</p>
+          ))
+        )}
 
         <CustomButton text={loading ? 'Iniciando sesión' : 'Iniciar sesión'} />
       </div>

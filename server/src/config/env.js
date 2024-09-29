@@ -9,7 +9,8 @@ const configEnv = {
   mysql_db: process.env.MYSQL_DBNAME,
   mysql_user: process.env.MYSQL_USER,
   mysql_pass: process.env.MYSQL_PASS,
-  jwt_code: process.env.SECRET_JWT_CODE
+  jwt_code: process.env.SECRET_JWT_CODE,
+  jwt_refresh: process.env.SECRET_JWT_REFRESH
 
   // users module
   // jwt_code: process.env.JWT_SECRET_CODE,

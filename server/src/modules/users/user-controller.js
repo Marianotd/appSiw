@@ -11,7 +11,7 @@ export const register = async (req, res) => {
   // Validación de campos
   const checkUser = validateRegister(user)
   if (checkUser.isError) {
-    return res.status(400).json({ isError: true, message: 'Error de validación de datos', error: checkUser.error })
+    return res.status(400).json({ isError: true, message: 'Error de validación de datos', validationsError: checkUser.error.map(err => err.message) })
   }
 
   // Hash de contraseña
@@ -47,7 +47,7 @@ export const login = async (req, res) => {
   // Validación de campos
   const checkUser = validateLogin(user)
   if (checkUser.isError) {
-    return res.status(400).json({ isError: true, message: 'Error de validación de datos', error: checkUser.error })
+    return res.status(400).json({ isError: true, message: 'Error de validación de datos', validationsError: checkUser.error.map(err => err.message) })
   }
 
   try {
@@ -66,7 +66,7 @@ export const login = async (req, res) => {
     try {
       // Creación de token jwt
       const token = jwt.sign(
-        { userId: userDb._id, email: userDb.email },
+        { userId: userDb._id, first_name: userDb.first_name, last_name: userDb.last_name, email: userDb.email },
         configEnv.jwt_code,
         { expiresIn: '1h' }
       )

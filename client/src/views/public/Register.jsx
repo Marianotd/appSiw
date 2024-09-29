@@ -9,6 +9,7 @@ import SpinerFullScreen from "../../components/loading/SpinerFullScreen"
 export default function Register() {
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState({ isError: false, message: '', validationsError: [] })
   const { register, handleSubmit, watch, formState: { errors } } = useForm()
   const inputList = ['first_name', 'last_name', 'email', 'password', 'confirm_password']
 
@@ -16,11 +17,15 @@ export default function Register() {
     try {
       setLoading(true)
       await registerUser(data)
-      navigate('/')
+      navigate('/auth/login')
     } catch (error) {
+      setError(error.response.data)
       console.error('Error en el envío del formulario:', error);
     } finally {
       setLoading(false)
+      setTimeout(() => {
+        setError({ isError: false, message: '' })
+      }, 3000)
     }
   }
 
@@ -51,10 +56,17 @@ export default function Register() {
           </Link>
         </div>
 
+        {error.isError && (<p className='text-red-500 text-sm'>{error.message}</p>)}
+        {error.validationsError && error.validationsError.length > 0 && (
+          error.validationsError.map(newErr => (
+            <p className='text-red-500 text-sm'>{newErr}</p>
+          ))
+        )}
+
         <CustomButton text={loading ? 'Registrando' : 'Registrarse'} />
       </div>
 
       <SpinerFullScreen loading={loading} />
-    </form>
+    </form >
   )
 }

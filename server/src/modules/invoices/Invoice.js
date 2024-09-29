@@ -11,7 +11,6 @@ const Invoice = db.define('invoices',
     },
     number: {
       type: DataTypes.INTEGER,
-      autoIncrement: true,
       allowNull: false,
       unique: true
     },

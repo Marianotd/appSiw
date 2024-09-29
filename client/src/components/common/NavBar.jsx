@@ -14,7 +14,7 @@ export default function NavBar() {
   const [open, setOpen] = useState(false);
 
   const navLinks = [
-    { path: '/invoices', label: 'Facturas' },
+    { path: '/', label: 'Facturas' },
     { path: '/user', label: 'Mis Datos' },
   ]
 
