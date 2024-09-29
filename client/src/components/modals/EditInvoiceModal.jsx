@@ -49,6 +49,7 @@ export default function EditInvoiceModal({ closeModal, invoiceToEdit }) {
           </h2>
 
           <button
+          type='button'
             onClick={closeModal}
             className='text-3xl text-[#A6A6A6] hover:text-[#444] ease-out duration-300'
           >

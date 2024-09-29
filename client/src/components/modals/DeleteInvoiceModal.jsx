@@ -26,6 +26,7 @@ export default function DeleteInvoiceModal({ closeModal, invoiceToDelete }) {
 
         <div className='grid grid-cols-2 gap-6'>
           <button
+          type='button'
             className="border border-[#A6A6A6] rounded-xl py-2 px-6 text-center bg-[#A6A6A6] hover:bg-white text-white hover:text-[#444] hover:shadow-lg font-bold tracking-wide ease-out duration-300"
             onClick={closeModal}
           >
