@@ -9,6 +9,7 @@ import ForgotPassword from '../views/public/ForgotPassword'
 import Invoices from "../views/private/Invoices";
 import User from "../views/private/User";
 import NotFound from "../components/notFound/NotFound";
+import ResetPassword from "../views/public/ResetPassword";
 
 export default function Router() {
   return (
@@ -19,6 +20,7 @@ export default function Router() {
             <Route path='/auth/register' element={<Register />} />
             <Route path='/auth/login' element={<Login />} />
             <Route path='/auth/forgot-password' element={<ForgotPassword />} />
+            <Route path='/auth/reset-password' element={<ResetPassword />} />
           </Route>
         </Route>
 

@@ -30,7 +30,7 @@ export default function Login() {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="bg-white h-1/2 flex flex-col justify-center gap-10 rounded-xl w-96 shadow-lg p-6"
+      className="bg-white min-h-1/2 flex flex-col justify-center gap-10 rounded-xl w-96 shadow-lg p-6"
     >
       <InputList
         inputs={inputList}

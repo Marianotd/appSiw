@@ -1,7 +1,8 @@
 import bcrypt from 'bcrypt'
 import User from './User.js'
 import jwt from 'jsonwebtoken'
-import { validateRegister, validateLogin, validateUpdate } from './user-validations.js'
+import { sendMail } from '../../config/mailer.js'
+import { validateRegister, validateLogin, validateUpdate, validateResetPassword } from './user-validations.js'
 import configEnv from '../../config/env.js'
 
 export const register = async (req, res) => {
@@ -71,12 +72,25 @@ export const login = async (req, res) => {
         { expiresIn: '1h' }
       )
 
+      // Creación de token jwt
+      const refreshToken = jwt.sign(
+        { userId: userDb._id },
+        configEnv.jwt_refresh,
+        { expiresIn: '5d' }
+      )
+
       res
         .cookie('access_token', token, {
           httpOnly: true,
           samesite: 'strict',
           secure: process.env.NODE_ENV === 'production',
           maxAge: 1000 * 60 * 60
+        })
+        .cookie('refresh_token', refreshToken, {
+          httpOnly: true,
+          samesite: 'strict',
+          secure: process.env.NODE_ENV === 'production',
+          maxAge: 1000 * 60 * 60 * 24 * 5
         })
         .status(200).json({
           isError: false,
@@ -97,6 +111,76 @@ export const login = async (req, res) => {
       message: 'Error al iniciar sesión',
       error: error.message
     })
+  }
+}
+
+export const forgotPassword = async (req, res) => {
+  const { email } = req.body
+
+  if (!email) {
+    return res.status(400).json({ isError: true, message: 'Debe ingresar un correo electrónico para identificar usuario' })
+  }
+
+  try {
+    const userDb = await User.findOne({ where: { email } })
+
+    const resetToken = jwt.sign(
+      { userId: userDb._id },
+      configEnv.jwt_code,
+      { expiresIn: '1h' }
+    )
+
+    const resetLink = `${configEnv.cors_origin}/auth/reset-password?token=${resetToken}`
+
+    const response = await sendMail(
+      userDb.email,
+      'Recuperación de contraseña',
+      `Para restablecer tu contraseña haz clic en el siguiente enlace: ${resetLink}`,
+      `<p>Para restablecer tu contraseña, haz clic en el siguiente enlace:</p> <a href="${resetLink}">Restablecer contraseña</a>`
+    )
+
+    console.log(response)
+
+    res
+      .cookie('reset_token', resetToken, {
+        httpOnly: true,
+        samesite: 'strict',
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 1000 * 60 * 60
+      })
+      .status(200).json({
+        isError: false,
+        message: 'Correo enviado exitosamente'
+      })
+  } catch (error) {
+    console.error('Usuario no encontrado', error)
+    res.status(400).json({ isError: true, message: 'Usuario no encontrado, pruebe otro correo electrónico' })
+  }
+}
+
+export const resetPassword = async (req, res) => {
+  const { token, password, confirm_password } = req.body
+  const user = { password, confirm_password }
+
+  // Validación de campos
+  const checkUser = validateResetPassword(user)
+  if (checkUser.isError) {
+    return res.status(400).json({ isError: true, message: 'Error de validación de datos', validationsError: checkUser.error.map(err => err.message) })
+  }
+
+  try {
+    const decoded = jwt.verify(token, configEnv.jwt_code)
+    const userDb = await User.findOne({ where: { _id: decoded.userId } })
+
+    // Hash de contraseña
+    user.password = await bcrypt.hash(user.password, 10)
+
+    await userDb.update({ password: user.password })
+
+    res.status(200).json({ isError: false, message: 'Contraseña modificada con éxito' })
+  } catch (error) {
+    console.error('Ha ocurrido un error al actualizar contraseña:', error)
+    res.status(400).json({ isError: true, message: 'No se ha podido actualizar la contraseña' })
   }
 }
 

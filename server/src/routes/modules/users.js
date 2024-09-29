@@ -1,19 +1,18 @@
 import { Router } from 'express'
-import { login, logout, register, update } from '../../modules/users/user-controller.js'
+import { forgotPassword, login, logout, register, resetPassword, update } from '../../modules/users/user-controller.js'
 import { authenticateJWT, refreshJWT } from '../../middleware/authValidator.js'
 
 const router = Router()
 
 router
-  // Sesión
   .post('/register', register)
   .post('/login', login)
   .get('/logout', logout)
-  .get('/session', authenticateJWT)
-  .post('/refresh-token', refreshJWT)
-
-  // User
-  .get('/current', authenticateJWT)
+  .post('/forgot-password', forgotPassword)
+  .post('/reset-password', resetPassword)
   .put('/current/update', update)
+  .get('/session', authenticateJWT)
+  .get('/current', authenticateJWT)
+  .get('/refresh-token', refreshJWT)
 
 export default router

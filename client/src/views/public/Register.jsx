@@ -32,7 +32,7 @@ export default function Register() {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="bg-white h-3/4 flex flex-col justify-center gap-6 rounded-xl w-96 shadow-lg p-6"
+      className="bg-white min-h-3/4 flex flex-col justify-center gap-6 rounded-xl w-96 shadow-lg p-6"
     >
       <p className="font-bold text-center px-4 text-lg">
         Completa los siguientes campos
