@@ -15,15 +15,16 @@ export const sessionSlice = (set, get) => ({
     }
   },
   isSessionActive: async () => {
-    const { data } = await fetchSession()
-    if (data) {
+    try {
+      const { data } = await fetchSession()
       set(() => ({
         status: true,
         idUser: data._id,
-        userDetail: { firstName: data.first_name, lastName: data.last_name, email: data.email }
+        userDetail: { first_name: data.first_name, last_name: data.last_name, email: data.email }
       }))
       return true
-    } else {
+    } catch (error) {
+      console.error(error.response.data.message)
       set(() => ({ status: false }))
       return false
     }

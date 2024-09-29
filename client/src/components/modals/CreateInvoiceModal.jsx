@@ -4,10 +4,8 @@ import { IoMdClose } from "react-icons/io";
 import InputList from '../list/InputList'
 import CustomButton from '../login-register/CustomButton'
 
-export default function CreateInvoiceModal({ closeModal, createInvoice }) {
+export default function CreateInvoiceModal({ closeModal, createInvoice, formError }) {
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(false)
-  const [errorMessage, setErrorMessage] = useState(null)
   const inputList = ['number', 'client', 'date', 'total']
 
   const { register, handleSubmit, watch, formState: { errors } } = useForm()
@@ -16,26 +14,8 @@ export default function CreateInvoiceModal({ closeModal, createInvoice }) {
     let { date } = data
     let formattedDate = date.replace('T', ' ')
 
-    try {
-      setLoading(true)
-      const { isError, message } = await createInvoice({ ...data, date: formattedDate })
-      if (isError) {
-        setError(true)
-        setErrorMessage(message)
-      } else {
-        setError(false)
-        setErrorMessage('')
-      }
-    } catch (error) {
-      console.error('Error en el envío del formulario:', error);
-      setError(true)
-    } finally {
-      setLoading(false)
-      setTimeout(() => {
-        setError(false)
-        setErrorMessage('')
-      }, 3000)
-    }
+    setLoading(true)
+    await createInvoice({ ...data, date: formattedDate })
   }
 
   return (
@@ -65,7 +45,12 @@ export default function CreateInvoiceModal({ closeModal, createInvoice }) {
           isInvoice={true}
         />
         <div className='w-full flex flex-col items-center gap-2'>
-          {error && (<p className='text-red-500'>{errorMessage}</p>)}
+          {formError.isError && (<p className='text-red-500'>{formError.message}</p>)}
+          {formError.validationsError && formError.validationsError.length > 0 && (
+            formError.validationsError.map(newErr => (
+              <p className='text-red-500 text-sm'>{newErr}</p>
+            ))
+          )}
 
           <CustomButton text={!loading ? 'Completar carga' : 'Cargando...'} />
         </div>

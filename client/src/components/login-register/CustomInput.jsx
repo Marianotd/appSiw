@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { PiEye, PiEyeClosed } from "react-icons/pi";
 
-export default function CustomInput({ name, register, watch, error }) {
+export default function CustomInput({ name, register, watch, error, isEditing }) {
   const [showError, setShowError] = useState(error);
   const [showPass, setShowPass] = useState(false)
   const inputValue = watch(name);
@@ -21,8 +21,8 @@ export default function CustomInput({ name, register, watch, error }) {
     setShowError(false);
   };
 
-  const typeSelector = name === 'email' ? 'email' : name === 'password' || name === 'confirm_password' ? 'password' : 'text';
-  const placeholderSelector = name === 'first_name' ? 'Nombre' : name === 'last_name' ? 'Apellido' : name === 'email' ? 'Correo electrónico' : name === 'password' ? 'Contraseña' : name === 'confirm_password' ? 'Confirmar contraseña' : 'No identificado';
+  const typeSelector = name === 'email' ? 'email' : name === 'password' || name === 'confirm_password' || name === 'prev_password' || name === 'new_password' ? 'password' : 'text';
+  const placeholderSelector = name === 'first_name' ? 'Nombre' : name === 'last_name' ? 'Apellido' : name === 'email' ? 'Correo electrónico' : name === 'password' ? 'Contraseña' : name === 'confirm_password' ? 'Confirmar contraseña' : name === 'prev_password' ? 'Contraseña Actual' : name === 'new_password' ? 'Nueva contraseña' : 'No identificado';
   const labelSelector = placeholderSelector[0].toUpperCase() + placeholderSelector.substring(1);
 
   const validationRules = {
@@ -36,7 +36,22 @@ export default function CustomInput({ name, register, watch, error }) {
       pattern: {
         value: /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>])[A-Za-z\d!@#$%^&*(),.?":{}|<>]{8,}$/, message: 'La contraseña debe contener:'
       }
-    }
+    },
+    confirm_password: {
+      required: 'Campo obligatorio',
+    },
+    first_name: { required: 'El nombre es obligatorio', pattern: { value: /[aA-zZ]/, message: 'El nombre solo puede incluir letras' } },
+    last_name: { required: 'El apellido es obligatorio', pattern: { value: /[aA-zZ]/, message: 'El apellido solo puede incluir letras' } },
+    // email: {
+    //   required: 'Campo obligatorio',
+    //   pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: 'Correo electrónico inválido' }
+    // },
+    // password: {
+    //   required: 'Campo obligatorio',
+    //   pattern: {
+    //     value: /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>])[A-Za-z\d!@#$%^&*(),.?":{}|<>]{8,}$/, message: 'La contraseña debe contener:'
+    //   }
+    // },
   };
 
   return (
@@ -46,6 +61,7 @@ export default function CustomInput({ name, register, watch, error }) {
         ${error ? 'border-red-500' : inputValue ? 'border-[#444]' : 'border-[#A6A6A6]'}`}
         onClick={handleClick}
       >
+
         <input
           type={typeSelector === 'password' ? showPass ? 'text' : 'password' : typeSelector}
           className={`border-none outline-none peer bg-transparent rounded-xl px-4

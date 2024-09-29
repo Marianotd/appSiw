@@ -7,7 +7,7 @@ import { updateInvoice } from '../../service/invoces';
 
 export default function EditInvoiceModal({ closeModal, invoiceToEdit }) {
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false)
+  const [error, setError] = useState({ isError: false, message: '', validationError: [] })
   const inputList = ['number', 'client', 'date', 'total']
 
   const { register, handleSubmit, watch, formState: { errors }, reset } = useForm({
@@ -27,11 +27,11 @@ export default function EditInvoiceModal({ closeModal, invoiceToEdit }) {
 
     try {
       setLoading(true)
-      await updateInvoice({ ...data, date: formattedDate })
+      await updateInvoice({ ...data, date: formattedDate }, invoiceToEdit.number)
       closeModal()
     } catch (error) {
-      console.log('Hubo un error al editar factura:', error)
-      setError(true)
+      setError(error.response.data)
+      console.error('Hubo un error al editar factura:', error)
     } finally {
       setLoading(false)
     }
@@ -64,7 +64,16 @@ export default function EditInvoiceModal({ closeModal, invoiceToEdit }) {
           isInvoice={true}
         />
 
-        <CustomButton text={!loading ? 'Completar edición' : 'Cargando...'} />
+        <div className='w-full flex flex-col items-center gap-2'>
+          {error.isError && (<p className='text-red-500'>{error.message}</p>)}
+          {error.validationsError && error.validationsError.length > 0 && (
+            error.validationsError.map(newErr => (
+              <p className='text-red-500 text-sm'>{newErr}</p>
+            ))
+          )}
+
+          <CustomButton text={!loading ? 'Completar edición' : 'Cargando...'} />
+        </div>
       </form>
     </div>
   )

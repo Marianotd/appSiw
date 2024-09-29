@@ -1,8 +1,8 @@
 import { z } from 'zod'
 
-const firstNameSchema = z.string().min(3)
-const lastNameSchema = z.string().min(3, 'El apellido debe tener al menos 3 caracteres')
-const emailSchema = z.string().email('Correo electrónico inválido')
+const firstNameSchema = z.string().min(3).refine((value) => /[aA-zZ]/.test(value), { message: 'El nombre solo debe incluir letras' })
+const lastNameSchema = z.string().min(3).refine((value) => /[aA-zZ]/.test(value), { message: 'El apellido solo debe incluir letras' })
+const emailSchema = z.string().email('Formato de correo electrónico inválido')
 const passwordSchema = z.string()
   .min(8, 'La contraseña debe tener al menos 8 caracteres')
   .refine((value) => /[A-Z]/.test(value), {
@@ -24,10 +24,7 @@ const validateSchema = (schema, data) => {
     return { isError: false }
   } catch (error) {
     console.error('Error de validación:', error.message)
-    return {
-      isError: true,
-      error: error
-    }
+    return { isError: true }
   }
 }
 
@@ -40,6 +37,11 @@ const registerSchema = z.object({
 }).refine((data) => data.password === data.confirm_password, {
   path: ['confirm_password'],
   message: 'Las contraseñas no coinciden'
+})
+
+const loginSchema = z.object({
+  email: emailSchema,
+  password: passwordSchema,
 })
 
 export const validateRegister = (user) => {
@@ -56,11 +58,16 @@ export const validateRegister = (user) => {
 }
 
 export const validateLogin = (user) => {
-  const loginSchema = z.object({
-    email: emailSchema,
-    password: passwordSchema,
-  })
-  return validateSchema(loginSchema, user)
+  try {
+    loginSchema.parse(user)
+    return { isError: false }
+  } catch (error) {
+    console.error('Error de validación:', error.errors)
+    return {
+      isError: true,
+      error: error.errors
+    }
+  }
 }
 
 export const validateUpdate = (user) => {

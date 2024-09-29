@@ -14,7 +14,7 @@ import EditInvoiceModal from '../../components/modals/EditInvoiceModal';
 export default function Invoices() {
   const [searchValue, setSeartchValue] = useState('')
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(false)
+  const [error, setError] = useState({ isError: false, message: '', validationError: [] })
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' })
   const [showModal, setShowModal] = useState(false)
   const [showEditModal, setShowEditModal] = useState(false)
@@ -70,12 +70,15 @@ export default function Invoices() {
   const handleCreateInvoice = async (newInvoice) => {
     try {
       const response = await createInvoice(newInvoice)
+      setShowModal(false)
       return response
     } catch (error) {
       console.error(error)
-      setError(true)
+      setError(error.response.data)
     } finally {
-      setShowModal(false)
+      setTimeout(() => {
+        setError({ isError: false, message: '', validationError: [] })
+      }, 3000);
     }
   }
 
@@ -99,10 +102,6 @@ export default function Invoices() {
 
   if (loading) {
     return <CustomLoader loading={loading} />
-  }
-
-  if (error) {
-    return <NotFound />
   }
 
   return (
@@ -157,6 +156,7 @@ export default function Invoices() {
           <CreateInvoiceModal
             closeModal={() => setShowModal(false)}
             createInvoice={handleCreateInvoice}
+            formError={error}
           />
         )
       }

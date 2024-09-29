@@ -8,6 +8,7 @@ import Register from '../views/public/Register'
 import ForgotPassword from '../views/public/ForgotPassword'
 import Invoices from "../views/private/Invoices";
 import User from "../views/private/User";
+import NotFound from "../components/notFound/NotFound";
 
 export default function Router() {
   return (
@@ -23,8 +24,9 @@ export default function Router() {
 
         <Route element={<PrivateRoutes />}>
           <Route element={<AppLayout />}>
-            <Route path='/invoices' element={<Invoices />} />
+            <Route path='/' element={<Invoices />} />
             <Route path='/user' element={<User />} />
+            <Route path="*" element={<NotFound />} />
           </Route>
         </Route>
       </Routes>
