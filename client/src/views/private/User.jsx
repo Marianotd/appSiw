@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form'
 import { FiEdit } from "react-icons/fi";
 import { useAppStore } from '../../context/useAppStore';
 import { updateUser } from '../../service';
-import UserDetail from '../../components/user/userDetail';
+import UserDetail from '../../components/user/UserDetail';
 import CustomButton from '../../components/login-register/CustomButton';
 import UserInputList from '../../components/list/UserInputList';
 
