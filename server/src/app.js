@@ -26,11 +26,6 @@ const connectDB = async () => {
 
 connectDB()
 
-// Ruta App
-app.get('/', (req, res) => {
-  res.send('Bienvenido.!')
-})
-
 // Ruta para API
 app.use('/api', router)
 
