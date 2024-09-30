@@ -3,7 +3,6 @@ import { TbFileInvoice } from "react-icons/tb";
 import { createInvoice, getAllInvoices } from '../../service/invoces'
 import dayjs from 'dayjs';
 import CustomLoader from '../../components/loading/CustomLoader'
-import NotFound from '../../components/notFound/NotFound'
 import SearchTool from '../../components/invoices/SearchTool'
 import CreateInvoiceModal from '../../components/modals/CreateInvoiceModal';
 import TableHead from '../../components/invoices/TableHead';
