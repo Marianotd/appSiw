@@ -26,6 +26,9 @@ export const authenticateJWT = async (req, res) => {
 export const refreshJWT = async (req, res) => {
   const refreshToken = req.cookies.refresh_token
 
+  console.log(req)
+  console.log(req.cookies)
+
   if (!refreshToken) {
     return res.status(401).json({ isError: true, message: 'No autorizado: no hay token de acceso' })
   }
