@@ -17,7 +17,7 @@ app.use(cookieParser())
 const connectDB = async () => {
   try {
     await db.authenticate()
-    await db.sync({ force: true })
+    // await db.sync({ force: false })
     console.log(`Conectado a la base de datos: ${db.getDatabaseName()}`)
   } catch (error) {
     console.error('No ha sido posible conectar a la base de datos:', error)
