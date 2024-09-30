@@ -83,13 +83,13 @@ export const login = async (req, res) => {
       res
         .cookie('access_token', token, {
           httpOnly: true,
-          // samesite: 'none',
+          samesite: 'None',
           secure: process.env.NODE_ENV === 'production',
           maxAge: 1000 * 60 * 60
         })
         .cookie('refresh_token', refreshToken, {
           httpOnly: true,
-          // samesite: 'none',
+          samesite: 'None',
           secure: process.env.NODE_ENV === 'production',
           maxAge: 1000 * 60 * 60 * 24 * 5
         })
@@ -143,7 +143,7 @@ export const forgotPassword = async (req, res) => {
     res
       .cookie('reset_token', resetToken, {
         httpOnly: true,
-        // samesite: 'none',
+        samesite: 'None',
         secure: process.env.NODE_ENV === 'production',
         maxAge: 1000 * 60 * 60
       })
