@@ -45,7 +45,6 @@ export const refreshJWT = async (req, res) => {
       .cookie('access_token', newAccessToken, {
         httpOnly: true,
         samesite: 'None',
-        domain: 'app-siw-server.onrender.com',
         secure: process.env.NODE_ENV === 'production',
         maxAge: 1000 * 60 * 60
       })

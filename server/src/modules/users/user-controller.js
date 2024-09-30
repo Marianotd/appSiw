@@ -84,7 +84,6 @@ export const login = async (req, res) => {
         .cookie('access_token', token, {
           httpOnly: true,
           samesite: 'None',
-          domain: 'app-siw-server.onrender.com',
           secure: process.env.NODE_ENV === 'production',
           maxAge: 1000 * 60 * 60
         })
@@ -145,7 +144,6 @@ export const forgotPassword = async (req, res) => {
       .cookie('reset_token', resetToken, {
         httpOnly: true,
         samesite: 'None',
-        domain: 'app-siw-server.onrender.com',
         secure: process.env.NODE_ENV === 'production',
         maxAge: 1000 * 60 * 60
       })

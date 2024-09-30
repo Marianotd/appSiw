@@ -37,7 +37,6 @@ export const requestWithRetry = async (requestFunction) => {
   }
 }
 
-
 export const registerUser = async (userData) => {
   return await requestWithRetry(async () => {
     const newUser = await axios.post(`${URI}/users/register`, userData)
