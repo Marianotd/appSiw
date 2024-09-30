@@ -2,15 +2,10 @@ import React from 'react'
 import { FiEdit } from "react-icons/fi";
 import { MdDelete } from "react-icons/md";
 import dayjs from 'dayjs'
-import utc from 'dayjs/plugin/utc'
-import timezone from 'dayjs/plugin/timezone'
-
-dayjs.extend(utc)
-dayjs.extend(timezone)
 
 export default function TableBody({ invoices, editFunction, deleteFuntion }) {
   const handleFormatDate = (date) => {
-    const formattedDate = dayjs(date).tz('America/Argentina/Mendoza').format('DD/MM/YYYY HH:mm')
+    const formattedDate = dayjs(date).format('DD/MM/YYYY HH:mm')
     return formattedDate
   }
 

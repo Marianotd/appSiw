@@ -7,7 +7,7 @@ const invoiceSchema = z.object({
     return /\d{4}-\d{2}-\d{2} \d{2}:\d{2}/.test(dateStr);
   }, {
     message: 'Formato de fecha y hora incorrecto. Debe ser YYYY-MM-DD HH:MM',
-  }).transform((dateStr) => new Date(dateStr)),
+  }).transform((dateStr) => new Date(dateStr).toUTCString()),
   total: z.number()
 });
 
