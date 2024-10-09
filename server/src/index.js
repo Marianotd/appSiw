@@ -1,7 +1,7 @@
 import app from './app.js'
 import configEnv from './config/env.js'
 
-const port = configEnv.port || 4000
+const PORT = configEnv.port ?? 4000
 
 app.get('/', (req, res) => {
   res.send('Bienvenido.!')
@@ -9,10 +9,10 @@ app.get('/', (req, res) => {
 
 const main = async () => {
   try {
-    await app.listen(port)
-    console.log(`Servidor corriendo en el puerto: ${port}`)
+    await app.listen(PORT)
+    console.log(`Servidor corriendo en el puerto: http://localhost:${PORT}`)
   } catch (error) {
-    console.log(error)
+    console.error('Ha ocurrido un error al iniciar servidor: ', error)
   }
 }
 

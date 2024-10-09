@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { createInvoice, deleteInvoice, getAllInvoices, getInvoice, updateInvoice } from '../../modules/invoices/invoice-controller.js'
+import { createInvoice, deleteInvoice, getAllInvoices, getInvoice, updateInvoice } from '../modules/invoices/invoice-controller.js'
 
 const router = Router()
 

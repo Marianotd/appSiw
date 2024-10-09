@@ -1,6 +1,6 @@
 import { Router } from 'express'
-import { forgotPassword, login, logout, register, resetPassword, update } from '../../modules/users/user-controller.js'
-import { authenticateJWT, refreshJWT } from '../../middleware/authValidator.js'
+import { forgotPassword, login, logout, register, resetPassword, update } from '../modules/users/user-controller.js'
+import { authenticateJWT, refreshJWT } from '../middleware/authValidator.js'
 
 const router = Router()
 

@@ -41,7 +41,7 @@ const registerSchema = z.object({
 
 const loginSchema = z.object({
   email: emailSchema,
-  password: passwordSchema,
+  password: passwordSchema
 })
 
 const updateSchema = z.object({
@@ -54,11 +54,11 @@ const updateSchema = z.object({
 
 const resetPasswordSchema = z.object({
   password: passwordSchema,
-  confirm_password: z.string(),
+  confirm_password: z.string()
 }).refine((data) => data.password === data.confirm_password, {
   path: ['confirm_password'],
-  message: 'Las contraseñas no coinciden',
-});
+  message: 'Las contraseñas no coinciden'
+})
 
 export const validateRegister = (user) => {
   return validateSchema(registerSchema, user)

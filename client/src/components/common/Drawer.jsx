@@ -62,7 +62,7 @@ export default function Drawer({ state, data, drawerRef, handleState }) {
       />
 
       <button
-        className='rounded-xl text-center text-white w-full text-lg py-2 font-bold mt-auto'
+        className='rounded-xl text-center text-white w-full text-lg py-2 font-bold mt-auto mb-10'
         onClick={handleLogout}
       >
         Cerrar sesión

@@ -24,7 +24,7 @@ const Invoice = db.define('invoices',
     },
     total: {
       type: DataTypes.FLOAT,
-      allowNull: false,
+      allowNull: false
     }
   },
   {

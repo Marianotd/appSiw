@@ -19,7 +19,6 @@ export const register = async (req, res) => {
   user.password = await bcrypt.hash(user.password, 10)
 
   try {
-
     // Verificar existencia de usuario
     const userDb = await User.findOne({ where: { email: user.email } })
     if (userDb) {
@@ -175,7 +174,7 @@ export const resetPassword = async (req, res) => {
     user.password = await bcrypt.hash(user.password, 10)
 
     await userDb.update({ password: user.password })
-    res.clearCookie('reset_token');
+    res.clearCookie('reset_token')
 
     res.status(200).json({ isError: false, message: 'Contraseña modificada con éxito' })
   } catch (error) {
@@ -241,16 +240,16 @@ export const update = async (req, res) => {
 }
 
 export const logout = (req, res) => {
-  res.clearCookie('access_token');
-  res.clearCookie('refresh_token');
-  return res.status(200).json({ isError: false, message: 'Sesión cerrada  con éxito' });
-};
+  res.clearCookie('access_token')
+  res.clearCookie('refresh_token')
+  return res.status(200).json({ isError: false, message: 'Sesión cerrada  con éxito' })
+}
 
 export const getUser = async (req, res) => {
   try {
     // Verificar user habiendo revisado token
     if (!req.user || !req.user.userId) {
-      return res.status(400).json({ isError: true, message: 'Usuario no autenticado o token inválido' });
+      return res.status(400).json({ isError: true, message: 'Usuario no autenticado o token inválido' })
     }
 
     // Verificar existencia de usuario

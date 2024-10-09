@@ -3,13 +3,14 @@ import cors from 'cors'
 import cookieParser from 'cookie-parser'
 import configEnv from './config/env.js'
 import db from './database/db.js'
-import router from './routes/router.js'
+import router from './router.js'
 
 // Inicialización
 const app = express()
-app.use(cors({ origin: configEnv.cors_origin, methods: ['GET', 'POST', 'PUT', 'DELETE'], credentials: true }))
+app.disable('x-powered-by')
 
-// Configuración
+// Middleware
+app.use(cors({ origin: configEnv.cors_origin, methods: ['GET', 'POST', 'PUT', 'DELETE'], credentials: true }))
 app.use(express.json())
 app.use(cookieParser())
 
